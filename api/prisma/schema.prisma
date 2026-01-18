@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Type {
+  buy
+  rent
+}
+
+enum Property {
+  apartment
+  house
+  condo
+  land
+}
+
+enum ContactStatus {
+  pending
+  inProgress
+  completed
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  username   String   @unique
+  password   String
+  avatar     String?
+  createdAt  DateTime @default(now())
+
+  posts      Post[]
+  savedPosts SavedPost[]
+  chats      ChatUser[]
+  messages   Message[]
+}
+
+model Post {
+  id          String      @id @default(uuid())
+  title       String
+  price       Int
+  images      String[]
+  address     String
+  city        String
+  bedroom     Int
+  bathroom    Int
+  latitude    String
+  longitude   String
+
+  ecoScore    Float?
+  greenScore  Float?
+  aqiScore    Float?
+  solarScore  Float?
+
+  type        Type
+  property    Property
+
+  createdAt   DateTime    @default(now())
+
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postDetail  PostDetail?
+  savedPosts  SavedPost[]
+
+  @@unique([address, city])
+  @@index([city])
+  @@index([price])
+}
+
+model PostDetail {
+  id         String  @id @default(uuid())
+  desc       String
+  utilities  String?
+  pet        String?
+  income     String?
+  size       Int?
+  school     Int?
+  bus        Int?
+  restaurant Int?
+
+  postId     String  @unique
+  post       Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model SavedPost {
+  id        String   @id @default(uuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@index([userId])
+}
+
+model Chat {
+  id          String     @id @default(uuid())
+  createdAt  DateTime   @default(now())
+  lastMessage String?
+
+  users      ChatUser[]
+  messages   Message[]
+}
+
+model ChatUser {
+  id     String @id @default(uuid())
+  chatId String
+  userId String
+
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([chatId, userId])
+}
+
+
+model Message {
+  id        String   @id @default(uuid())
+  text      String
+  createdAt DateTime @default(now())
+
+  chatId    String
+  userId    String
+
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([chatId])
+}
+
+
+model NeighborhoodReview {
+  id          String   @id @default(uuid())
+  city        String
+  locality    String
+  text        String
+  safety      Float
+  cleanliness Float
+  livability  Float
+  createdAt   DateTime @default(now())
+
+  @@index([city])
+}
+
+
+model Contact {
+  id        String        @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    ContactStatus @default(pending)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
