@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 
+/* ✅ NAMED EXPORT — THIS IS WHAT WAS MISSING */
 export const AuthContext = createContext(null);
 
 export const AuthContextProvider = ({ children }) => {
