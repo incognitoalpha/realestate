@@ -8,7 +8,7 @@ import Login from "./routes/login/login";
 import Register from "./routes/register/register";
 import ProfileUpdatePage from "./routes/profileUpdatePage/profileUpdatePage";
 import NewPostPage from "./routes/newPostPage/newPostPage";
-
+import { BrowserRouter } from "react-router-dom";
 import ContactPage from "./routes/contactPage/ContactPage"; // Import the ContactPage component
 
 import AboutPage from "./routes/aboutPage/AboutPage";
