@@ -1,7 +1,9 @@
 import { createContext, useEffect, useState } from "react";
-import axios from "axios";
+import apiRequest from "../lib/apiRequest";
 
-/* ✅ NAMED EXPORT — THIS IS WHAT WAS MISSING */
+/**
+ * Context
+ */
 export const AuthContext = createContext(null);
 
 export const AuthContextProvider = ({ children }) => {
@@ -9,30 +11,46 @@ export const AuthContextProvider = ({ children }) => {
     JSON.parse(localStorage.getItem("user")) || null
   );
 
+  /**
+   * Persist user to localStorage
+   */
   useEffect(() => {
     localStorage.setItem("user", JSON.stringify(currentUser));
   }, [currentUser]);
 
+  /**
+   * 🔹 MINIMAL ADDITION (THIS FIXES YOUR BUG)
+   * Used by Login.jsx
+   */
+  const updateUser = (data) => {
+    setCurrentUser(data);
+  };
+
+  /**
+   * Login (optional – kept for future use)
+   */
   const login = async (inputs) => {
-    const res = await axios.post(
-      "https://realestate-api-yb05.onrender.com/api/auth/login",
-      inputs,
-      { withCredentials: true }
-    );
+    const res = await apiRequest.post("/auth/login", inputs);
     setCurrentUser(res.data);
   };
 
+  /**
+   * Logout
+   */
   const logout = async () => {
-    await axios.post(
-      "https://realestate-api-yb05.onrender.com/api/auth/logout",
-      {},
-      { withCredentials: true }
-    );
+    await apiRequest.post("/auth/logout");
     setCurrentUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        currentUser,
+        updateUser, // ✅ NOW EXISTS
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
