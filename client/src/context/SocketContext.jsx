@@ -12,12 +12,9 @@ export const SocketContextProvider = ({ children }) => {
   //   setSocket(io("http://localhost:4000"));
   // }, []);
   useEffect(() => {
-    const newSocket = io(
-      "https://realestate-socket-krj9.onrender.com",
-      {
-        withCredentials: true,
-      }
-    );
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
+  withCredentials: true,
+});
 
     setSocket(newSocket);
 
