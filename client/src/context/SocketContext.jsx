@@ -8,10 +8,23 @@ export const SocketContextProvider = ({ children }) => {
   const { currentUser } = useContext(AuthContext);
   const [socket, setSocket] = useState(null);
 
+  // useEffect(() => {
+  //   setSocket(io("http://localhost:4000"));
+  // }, []);
   useEffect(() => {
-    setSocket(io("http://localhost:4000"));
-  }, []);
+    const newSocket = io(
+      "https://realestate-socket-krj9.onrender.com",
+      {
+        withCredentials: true,
+      }
+    );
 
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
   useEffect(() => {
   currentUser && socket?.emit("newUser", currentUser.id);
   }, [currentUser, socket]);
